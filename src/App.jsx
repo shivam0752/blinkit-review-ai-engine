@@ -908,12 +908,24 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                       </div>
                     )}
 
-                    <button
-                      className="btn btn-primary btn-full mt-3"
-                      onClick={continueToSynthesis}
-                    >
-                      <ArrowRight size={16} style={{ display: 'inline', marginRight: '0.2rem' }} /> Quality Audited - Continue to Synthesis
-                    </button>
+                    <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px dashed rgba(251, 191, 36, 0.3)', borderRadius: '8px', backgroundColor: 'rgba(251, 191, 36, 0.02)' }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 0.75rem 0', lineHeight: '1.4' }}>
+                        💡 <strong>Skip Option:</strong> You can click below to skip this manual checkpoint at any time. This stage is shown to demonstrate the human-in-the-loop verification pipeline used during offline data preparation.
+                      </p>
+                      <button
+                        className="btn btn-primary btn-full"
+                        style={{
+                          backgroundColor: 'var(--accent-yellow)',
+                          color: '#000',
+                          fontWeight: 700,
+                          boxShadow: '0 0 15px rgba(247, 208, 70, 0.45)',
+                          border: '1px solid var(--accent-yellow)'
+                        }}
+                        onClick={continueToSynthesis}
+                      >
+                        <ArrowRight size={16} style={{ display: 'inline', marginRight: '0.4rem' }} /> Skip Audit & Continue to Synthesis
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
