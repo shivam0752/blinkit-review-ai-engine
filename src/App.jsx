@@ -89,6 +89,7 @@ export default function App() {
   const [demoSelectedQid, setDemoSelectedQid] = useState(1);
   const [liveSynthesisLoading, setLiveSynthesisLoading] = useState(false);
   const [liveSynthesisResult, setLiveSynthesisResult] = useState(null);
+  const [expandedQids, setExpandedQids] = useState({});
 
   const logsEndRef = useRef(null);
 
@@ -565,6 +566,7 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
+          {/* BLINKIT LOGO PLACEHOLDER: You can replace this div or put your img icon here */}
           <div className="logo-accent"></div>
           <div>
             <h1 className="brand-name">Blinkit</h1>
@@ -936,7 +938,20 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                       return (
                         <div key={insight.question_id} className="insight-card" style={{ backgroundColor: 'var(--bg-card)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                           <h4 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--accent-yellow)', lineHeight: '1.3' }}>Q{insight.question_id}: {insight.question_text}</h4>
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          <p 
+                            onClick={() => setExpandedQids(prev => ({ ...prev, [insight.question_id]: !prev[insight.question_id] }))}
+                            style={{ 
+                              fontSize: '0.8rem', 
+                              color: 'var(--text-secondary)', 
+                              marginBottom: '1rem', 
+                              cursor: 'pointer',
+                              display: expandedQids[insight.question_id] ? 'block' : '-webkit-box', 
+                              WebkitLineClamp: 3, 
+                              WebkitBoxOrient: 'vertical', 
+                              overflow: 'hidden' 
+                            }}
+                            title="Click to read full summary"
+                          >
                             {insight.summary}
                           </p>
                           <div className="themes-mini">
