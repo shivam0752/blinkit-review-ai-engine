@@ -11,12 +11,19 @@ Here is the story of how a single piece of feedback journeys from a customer's k
 ## 📖 The Narrative: A Feedback Journey in 5 Acts
 
 ```
-  [Act 1: The Gathering]      ➔      [Act 2: The Purge]      ➔      [Act 3: The Brain]
-  Apify, Play Store, & Web           Pandas cleaning pipeline       Gemini Classification
-         │                                                                  │
-         ▼                                                                  ▼
-  [Act 5: The Reveal]         ◀      [Act 4: The Checkpoint] ◀      [Stage 4: Synthesis]
-Interactive React Dashboard           Human-in-the-loop audit       Thematic Insights Grid
+[Act 1: The Gathering] (Apify, Play Store, & Web Ingestion)
+         │
+         ▼
+[Act 2: The Purge] (Pandas Deduplication & Filtering)
+         │
+         ▼
+[Act 3: The Brain] (Gemini LLM Batch Classification)
+         │
+         ▼
+[Act 4: The Checkpoint] (Human-in-the-Loop PM Audit)
+         │
+         ▼
+[Act 5: The Reveal] (Interactive React Dashboard)
 ```
 
 ### 🎬 Act 1: The Gathering (Multi-Channel Ingestion)
