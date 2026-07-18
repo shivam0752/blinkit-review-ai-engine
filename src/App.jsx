@@ -566,8 +566,8 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
-          {/* BLINKIT LOGO PLACEHOLDER: You can replace this div or put your img icon here */}
-          <div className="logo-accent"></div>
+          {/* BLINKIT LOGO: Replaced placeholder with blinkit-logo-01.webp */}
+          <img src="/final-data/blinkit-logo-01.webp" alt="Blinkit Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }} />
           <div>
             <h1 className="brand-name">Blinkit</h1>
             <span className="brand-sub">Growth Engine</span>
