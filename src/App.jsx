@@ -711,7 +711,6 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                 <div className="setup-form" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div className="pipeline-card-status" style={{ marginBottom: '1.25rem' }}>
                     <h5><RefreshCw size={16} className="text-accent" style={{ display: 'inline', marginRight: '0.4rem', animation: 'spin 8s linear infinite' }} /> Vercel Serverless Pipeline</h5>
-                    <p className="form-sub-text">When hosted on Vercel, this demo calls your securely configured <code>GEMINI_API_KEY</code> environment variable via backend serverless functions.</p>
                   </div>
 
                   <button
@@ -847,64 +846,64 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                       </div>
                     ) : (
                       <div className="audit-workbench-card">
-                      <div className="audit-meta">
-                        <span className={`badge badge-source-${currentAuditRecord.source?.toLowerCase()}`}>{currentAuditRecord.source?.replace('_', ' ')}</span>
-                        <span className="audit-id-badge">ID: {currentAuditRecord.id}</span>
-                      </div>
-                      <div className="audit-review-text">
-                        "{currentAuditRecord.text}"
-                      </div>
-
-                      <div className="audit-comparison">
-                        <div className="audit-col">
-                          <div className="col-title">AI Predicted Sentiment</div>
-                          <div className="col-val" style={{ textTransform: 'capitalize' }}>{currentAuditRecord.sentiment}</div>
+                        <div className="audit-meta">
+                          <span className={`badge badge-source-${currentAuditRecord.source?.toLowerCase()}`}>{currentAuditRecord.source?.replace('_', ' ')}</span>
+                          <span className="audit-id-badge">ID: {currentAuditRecord.id}</span>
                         </div>
-                        <div className="audit-col">
-                          <div className="col-title">AI Predicted Tags</div>
-                          <div className="col-val">
-                            {JSON.stringify(parsePythonicJSON(currentAuditRecord.category_tags))}
+                        <div className="audit-review-text">
+                          "{currentAuditRecord.text}"
+                        </div>
+
+                        <div className="audit-comparison">
+                          <div className="audit-col">
+                            <div className="col-title">AI Predicted Sentiment</div>
+                            <div className="col-val" style={{ textTransform: 'capitalize' }}>{currentAuditRecord.sentiment}</div>
                           </div>
-                        </div>
-                      </div>
-
-                      <div className="audit-actions mt-3" style={{ display: 'flex', gap: '0.75rem' }}>
-                        <button className="btn btn-success" style={{ flexGrow: 1 }} onClick={() => handleAuditVerification(true)}>
-                          <Check size={16} style={{ display: 'inline', marginRight: '0.2rem' }} /> Agree with AI
-                        </button>
-                        <button className="btn btn-danger" style={{ flexGrow: 1 }} onClick={() => handleAuditVerification(false)}>
-                          <X size={16} style={{ display: 'inline', marginRight: '0.2rem' }} /> Disagree / Override
-                        </button>
-                      </div>
-
-                      {showOverride && (
-                        <div className="audit-override-controls mt-3">
-                          <h5>Override Correction</h5>
-                          <div className="form-group-flex" style={{ display: 'flex', gap: '1rem' }}>
-                            <div style={{ flexGrow: 1 }}>
-                              <label>Correct Sentiment:</label>
-                              <select value={overrideSentiment} onChange={(e) => setOverrideSentiment(e.target.value)}>
-                                <option value="positive">Positive</option>
-                                <option value="negative">Negative</option>
-                                <option value="neutral">Neutral</option>
-                                <option value="mixed">Mixed</option>
-                              </select>
-                            </div>
-                            <div style={{ flexGrow: 1 }}>
-                              <label>Correct Tags (comma sep):</label>
-                              <input
-                                type="text"
-                                value={overrideTags}
-                                onChange={(e) => setOverrideTags(e.target.value)}
-                                placeholder="delivery, quality"
-                              />
+                          <div className="audit-col">
+                            <div className="col-title">AI Predicted Tags</div>
+                            <div className="col-val">
+                              {JSON.stringify(parsePythonicJSON(currentAuditRecord.category_tags))}
                             </div>
                           </div>
-                          <button className="btn btn-primary btn-sm mt-2 btn-full" onClick={submitOverrideCorrection}>
-                            Save Override Correction
+                        </div>
+
+                        <div className="audit-actions mt-3" style={{ display: 'flex', gap: '0.75rem' }}>
+                          <button className="btn btn-success" style={{ flexGrow: 1 }} onClick={() => handleAuditVerification(true)}>
+                            <Check size={16} style={{ display: 'inline', marginRight: '0.2rem' }} /> Agree with AI
+                          </button>
+                          <button className="btn btn-danger" style={{ flexGrow: 1 }} onClick={() => handleAuditVerification(false)}>
+                            <X size={16} style={{ display: 'inline', marginRight: '0.2rem' }} /> Disagree / Override
                           </button>
                         </div>
-                      )}
+
+                        {showOverride && (
+                          <div className="audit-override-controls mt-3">
+                            <h5>Override Correction</h5>
+                            <div className="form-group-flex" style={{ display: 'flex', gap: '1rem' }}>
+                              <div style={{ flexGrow: 1 }}>
+                                <label>Correct Sentiment:</label>
+                                <select value={overrideSentiment} onChange={(e) => setOverrideSentiment(e.target.value)}>
+                                  <option value="positive">Positive</option>
+                                  <option value="negative">Negative</option>
+                                  <option value="neutral">Neutral</option>
+                                  <option value="mixed">Mixed</option>
+                                </select>
+                              </div>
+                              <div style={{ flexGrow: 1 }}>
+                                <label>Correct Tags (comma sep):</label>
+                                <input
+                                  type="text"
+                                  value={overrideTags}
+                                  onChange={(e) => setOverrideTags(e.target.value)}
+                                  placeholder="delivery, quality"
+                                />
+                              </div>
+                            </div>
+                            <button className="btn btn-primary btn-sm mt-2 btn-full" onClick={submitOverrideCorrection}>
+                              Save Override Correction
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -950,17 +949,17 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                       return (
                         <div key={insight.question_id} className="insight-card" style={{ backgroundColor: 'var(--bg-card)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                           <h4 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--accent-yellow)', lineHeight: '1.3' }}>Q{insight.question_id}: {insight.question_text}</h4>
-                          <p 
+                          <p
                             onClick={() => setExpandedQids(prev => ({ ...prev, [insight.question_id]: !prev[insight.question_id] }))}
-                            style={{ 
-                              fontSize: '0.8rem', 
-                              color: 'var(--text-secondary)', 
-                              marginBottom: '1rem', 
+                            style={{
+                              fontSize: '0.8rem',
+                              color: 'var(--text-secondary)',
+                              marginBottom: '1rem',
                               cursor: 'pointer',
-                              display: expandedQids[insight.question_id] ? 'block' : '-webkit-box', 
-                              WebkitLineClamp: 3, 
-                              WebkitBoxOrient: 'vertical', 
-                              overflow: 'hidden' 
+                              display: expandedQids[insight.question_id] ? 'block' : '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden'
                             }}
                             title="Click to read full summary"
                           >
