@@ -23,14 +23,18 @@ import {
   Search,
   Check,
   X,
-  MessageSquare
+  MessageSquare,
+  Download
 } from 'lucide-react';
+
 import ArchitectureDiagram from './components/ArchitectureDiagram';
 import SandboxChat from './components/SandboxChat';
 import MetricsOverview from './components/MetricsOverview';
 import HypothesisGrid from './components/HypothesisGrid';
 import ReviewsExplorer from './components/ReviewsExplorer';
 import UserSegments from './components/UserSegments';
+import StrategicInsights from './components/StrategicInsights';
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -584,6 +588,14 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
           </button>
 
           <button
+            className={`nav-item ${activeTab === 'ai-sandbox' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai-sandbox')}
+          >
+            <Sparkles size={18} />
+            <span>AI Classification Sandbox</span>
+          </button>
+
+          <button
             className={`nav-item ${activeTab === 'sandbox' ? 'active' : ''}`}
             onClick={() => setActiveTab('sandbox')}
           >
@@ -607,20 +619,44 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
       <main className="main-content">
         <header className="top-header">
           <div className="header-title">
-            <h1>{activeTab === 'dashboard' ? 'Growth Insights Dashboard' : 'Test Yourself Sandbox'}</h1>
+            <h1>{activeTab === 'dashboard' ? 'Growth Insights Dashboard' : activeTab === 'ai-sandbox' ? 'AI Classification Sandbox' : 'Test Yourself Sandbox'}</h1>
             <p className="text-secondary">
               {activeTab === 'dashboard'
                 ? 'Analyzing multi-channel user feedback at scale to expand category adoption'
+                : activeTab === 'ai-sandbox'
+                ? 'Observe how the AI translates, clean-filters, and maps taxonomy in real-time'
                 : 'Interactive walkthrough of the AI-powered classification and validation pipeline'}
             </p>
           </div>
 
           {activeTab === 'dashboard' && !loading && (
-            <div className="header-stats" style={{ display: 'flex', gap: '1rem' }}>
-              <div className="stat-badge">
-                <span className="stat-label">Dataset Size</span>
-                <span className="stat-value">{reviewsData.length.toLocaleString()} reviews</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="header-stats" style={{ display: 'flex', gap: '1rem' }}>
+                <div className="stat-badge">
+                  <span className="stat-label">Dataset Size</span>
+                  <span className="stat-value">{reviewsData.length.toLocaleString()} reviews</span>
+                </div>
               </div>
+              <button 
+                onClick={() => window.print()} 
+                className="btn btn-primary" 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  backgroundColor: 'var(--accent-yellow)',
+                  color: '#000',
+                  fontWeight: 700,
+                  border: 'none',
+                  boxShadow: '0 0 15px rgba(247, 208, 70, 0.3)',
+                  height: '42px',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                <Download size={16} />
+                <span>Download Detailed PDF Report</span>
+              </button>
             </div>
           )}
         </header>
@@ -652,6 +688,10 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
             {/* Strategic User Segments Section */}
             <UserSegments />
 
+            {/* Strategic Insights Section with PDF Download */}
+            <StrategicInsights reviewsData={reviewsData} sentimentCounts={sentimentCounts} />
+
+
             <ReviewsExplorer
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -673,14 +713,16 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
               totalPages={totalPages}
             />
           </section>
+        ) : activeTab === 'ai-sandbox' ? (
+          /* TAB 2: AI PLAYGROUND VIEW */
+          <section className="content-view active">
+            <SandboxChat />
+          </section>
         ) : (
-          /* TAB 2: TEST YOURSELF SANDBOX VIEW */
+          /* TAB 3: TEST YOURSELF SANDBOX VIEW */
           <section className="content-view active">
             {/* Architecture Flow Diagram */}
             <ArchitectureDiagram />
-
-            {/* AI Sandbox Chat Simulator */}
-            <SandboxChat />
 
             {/* Pipeline Configuration setup */}
             <div className="sandbox-setup-card glass">
@@ -965,17 +1007,17 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                           >
                             {insight.summary}
                           </p>
-                          <div className="themes-mini">
+                           <div className="themes-mini">
                             <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>Top Themes:</strong>
-                            <ul style={{ paddingLeft: '0', listStyleType: 'none', fontSize: '0.75rem', margin: '0.5rem 0 0 0', color: 'var(--text-muted)' }}>
+                            <ul style={{ paddingLeft: '0', listStyleType: 'none', fontSize: '0.75rem', margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
                               {themes.slice(0, 3).map((t, idx) => (
                                 <li key={idx} style={{ marginBottom: '0.5rem' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                                    <span>{t.title}</span>
-                                    <span style={{ opacity: 0.6 }}>{t.frequency} mentions</span>
+                                    <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{t.title}</span>
+                                    <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{t.frequency} mentions</span>
                                   </div>
                                   <div style={{ height: '4px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '2px' }}>
-                                    <div style={{ height: '100%', width: `${Math.min(100, t.frequency * 8)}%`, backgroundColor: 'var(--accent-blue)', borderRadius: '2px' }}></div>
+                                    <div style={{ height: '100%', width: `${Math.min(100, t.frequency * 8)}%`, backgroundColor: '#3B82F6', borderRadius: '2px' }}></div>
                                   </div>
                                 </li>
                               ))}
