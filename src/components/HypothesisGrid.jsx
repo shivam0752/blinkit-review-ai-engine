@@ -23,7 +23,20 @@ export default function HypothesisGrid({
               onClick={() => setSelectedQid(item.question_id)}
             >
               <div>
-                <div className="q-badge">Question Q{item.question_id}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div className="q-badge" style={{ margin: 0 }}>Question Q{item.question_id}</div>
+                  <div style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 'bold',
+                    backgroundColor: Number(item.confidence) >= 0.9 ? 'rgba(16, 185, 129, 0.15)' : Number(item.confidence) >= 0.7 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                    color: Number(item.confidence) >= 0.9 ? '#10B981' : Number(item.confidence) >= 0.7 ? '#F59E0B' : '#EF4444',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255,255,255,0.05)'
+                  }}>
+                    Conf: {Math.round(Number(item.confidence) * 100)}%
+                  </div>
+                </div>
                 <div className="q-text">{item.question_text}</div>
               </div>
               <div className="q-footer">
@@ -46,25 +59,42 @@ export default function HypothesisGrid({
           <div className="panel-body">
             <div className="panel-left">
               <div className="summary-box">
-                <h4><Sparkles size={16} className="text-accent" /> Synthesized LLM Summary</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h4 style={{ margin: 0 }}><Sparkles size={16} className="text-accent" /> Synthesized LLM Summary</h4>
+                  <div style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    backgroundColor: Number(selectedInsight.confidence) >= 0.9 ? 'rgba(16, 185, 129, 0.15)' : Number(selectedInsight.confidence) >= 0.7 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                    color: Number(selectedInsight.confidence) >= 0.9 ? '#10B981' : Number(selectedInsight.confidence) >= 0.7 ? '#F59E0B' : '#EF4444',
+                    padding: '3px 8px',
+                    borderRadius: '4px',
+                    border: '1px solid currentColor'
+                  }}>
+                    AI Confidence Score: {Math.round(Number(selectedInsight.confidence) * 100)}%
+                  </div>
+                </div>
                 <p>{selectedInsight.summary}</p>
               </div>
 
               <div className="themes-container">
                 <h4>Key Themes Identified</h4>
                 <div className="themes-list">
-                  {parsePythonicJSON(selectedInsight.key_themes).map((theme, i) => (
-                    <div key={i} className="theme-item">
-                      <div className="theme-meta">
-                        <span className="theme-title">{theme.title}</span>
-                        <span className="theme-freq">Mentions: {theme.frequency}</span>
+                  {(() => {
+                    const themes = parsePythonicJSON(selectedInsight.key_themes);
+                    const maxFreq = Math.max(...themes.map(t => Number(t.frequency) || 1)) || 1;
+                    return themes.map((theme, i) => (
+                      <div key={i} className="theme-item">
+                        <div className="theme-meta">
+                          <span className="theme-title">{theme.title}</span>
+                          <span className="theme-freq">Mentions: {theme.frequency}</span>
+                        </div>
+                        <p className="theme-desc">{theme.description}</p>
+                        <div className="theme-progress">
+                          <div className="theme-progress-fill" style={{ width: `${(Number(theme.frequency) / maxFreq) * 100}%`, backgroundColor: '#3B82F6' }}></div>
+                        </div>
                       </div>
-                      <p className="theme-desc">{theme.description}</p>
-                      <div className="theme-progress">
-                        <div className="theme-progress-fill" style={{ width: '60%' }}></div>
-                      </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </div>
 

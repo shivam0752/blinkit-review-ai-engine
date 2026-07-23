@@ -624,8 +624,8 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
               {activeTab === 'dashboard'
                 ? 'Analyzing multi-channel user feedback at scale to expand category adoption'
                 : activeTab === 'ai-sandbox'
-                ? 'Observe how the AI translates, clean-filters, and maps taxonomy in real-time'
-                : 'Interactive walkthrough of the AI-powered classification and validation pipeline'}
+                  ? 'Observe how the AI translates, clean-filters, and maps taxonomy in real-time'
+                  : 'Interactive walkthrough of the AI-powered classification and validation pipeline'}
             </p>
           </div>
 
@@ -633,16 +633,16 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div className="header-stats" style={{ display: 'flex', gap: '1rem' }}>
                 <div className="stat-badge">
-                  <span className="stat-label">Dataset Size</span>
-                  <span className="stat-value">{reviewsData.length.toLocaleString()} reviews</span>
+                  <span className="stat-label">Dataset: 4,000+ Raw</span>
+                  <span className="stat-value">{reviewsData.length.toLocaleString()} Legit Reviews</span>
                 </div>
               </div>
-              <button 
-                onClick={() => window.print()} 
-                className="btn btn-primary" 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
+              <button
+                onClick={() => window.print()}
+                className="btn btn-primary"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: '0.5rem',
                   backgroundColor: 'var(--accent-yellow)',
                   color: '#000',
@@ -675,6 +675,7 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
               sentimentCounts={sentimentCounts}
               sourcesChartData={sourcesChartData}
               categoriesChartData={categoriesChartData}
+              totalLegit={reviewsData.length}
             />
 
             <HypothesisGrid
@@ -756,7 +757,7 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
 
                   <div className="disclaimer-alert">
                     <AlertTriangle size={16} className="text-warning" style={{ flexShrink: 0 }} />
-                    <span><strong>Demo Dataset Disclaimer:</strong> This pipeline uses a 50-review demo sample. To see the full strategic insights compiled from all 2500+ multi-channel reviews, please visit the <strong>Insights Dashboard</strong>.</span>
+                    <span><strong>Demo Dataset Disclaimer:</strong> This pipeline uses a 50-review demo sample. To see the full strategic insights compiled from all 2000+ multi-channel reviews, please visit the <strong>Insights Dashboard</strong>.</span>
                   </div>
                 </div>
 
@@ -1017,7 +1018,7 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                           >
                             {insight.summary}
                           </p>
-                           <div className="themes-mini">
+                          <div className="themes-mini">
                             <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>Top Themes:</strong>
                             <ul style={{ paddingLeft: '0', listStyleType: 'none', fontSize: '0.75rem', margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
                               {themes.slice(0, 3).map((t, idx) => (

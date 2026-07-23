@@ -1,12 +1,13 @@
 import React from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { Award, Users, TrendingUp } from 'lucide-react';
+import { Award, Users, TrendingUp, Database } from 'lucide-react';
 
 export default function MetricsOverview({ 
   sentimentChartData, 
   sentimentCounts, 
   sourcesChartData, 
-  categoriesChartData 
+  categoriesChartData,
+  totalLegit = 2318
 }) {
   return (
     <div className="metrics-grid">
@@ -99,6 +100,33 @@ export default function MetricsOverview({
           />
         </div>
       </div>
+
+      {(() => {
+        const totalRaw = 3946;
+        const noisePercent = Math.round((1 - totalLegit / totalRaw) * 1000) / 10;
+        return (
+          <div className="metric-card glass">
+            <div className="metric-header">
+              <span className="metric-title">Ingestion & Cleansing</span>
+              <Database size={16} className="text-accent" />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flexGrow: 1, justifyContent: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.4rem' }}>
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Original Raw Data:</span>
+                <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--accent-yellow)' }}>{totalRaw.toLocaleString()} reviews</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.4rem' }}>
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Legit Processed:</span>
+                <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#10B981' }}>{totalLegit.toLocaleString()} reviews</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Pipeline Noise Filtered:</span>
+                <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#EF4444' }}>{noisePercent}% removed</span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

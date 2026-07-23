@@ -5,46 +5,46 @@ import { Doughnut } from 'react-chartjs-2';
 
 
 const STRATEGIC_THEMES = [
-  { rank: 1, title: 'Operational Reliability', mentions: 15, category: 'Habit & Trust', desc: 'Consistent delivery speed and product availability build trust, transforming the app into a recurring habit.' },
-  { rank: 2, title: 'Pricing & Fee Transparency', mentions: 12, category: 'Pricing', desc: 'Dissatisfaction with complex pricing models, handling fees, and delivery surcharges relative to offline alternatives.' },
-  { rank: 3, title: 'Time-Critical Utility', mentions: 12, category: 'Delivery', desc: 'Users default to quick commerce to satisfy immediate, time-sensitive demands where traditional shipping is too slow.' },
-  { rank: 4, title: 'Authenticity & Accuracy', mentions: 9, category: 'Trust', desc: 'Friction and anxiety regarding counterfeits, expired products, and incorrect specifications for sealed or high-value items.' },
-  { rank: 5, title: 'Quality Control & Fulfillment', mentions: 9, category: 'Quality', desc: 'Frequent reports of stale produce, incorrect substitutions, and missing items leading to high immediate post-delivery friction.' },
-  { rank: 6, title: 'Customer Support Effectiveness', mentions: 8, category: 'Trust', desc: 'Negative feedback loop caused by rigid automated chatbot support refusing refunds or replacements for damaged items.' },
-  { rank: 7, title: 'New-Market Expansion', mentions: 8, category: 'Discovery', desc: 'Tier-2 and Tier-3 city users show high trial engagement, validating delivery time promises for the first time.' },
-  { rank: 8, title: 'Return & Replacement Friction', mentions: 7, category: 'Trust', desc: 'Fear of being left with a defective electronic item or expired premium product due to "No Return" policies.' },
-  { rank: 9, title: 'Reactive Snacking & Treats', mentions: 7, category: 'Habit', desc: 'Snack and beverage category adoption is driven by impulsive, evening, and late-night social entertainment patterns.' },
-  { rank: 10, title: 'Quality Assurance Concerns', mentions: 7, category: 'Quality', desc: 'Reluctance to buy fresh produce or high-value gourmet foods without pre-purchase inspection capabilities.' }
+  { rank: 1, title: 'Ineffective Support Resolution', mentions: 17, category: 'Support & Trust', desc: 'Automated chatbots and agents closing tickets without resolving missing items or defective goods.' },
+  { rank: 2, title: 'Convenience & Speed', mentions: 15, category: 'Delivery', desc: 'Users deeply value the rapid 10-minute delivery promise for daily essentials and top-up items.' },
+  { rank: 3, title: 'Product Quality & Fulfillment', mentions: 14, category: 'Quality', desc: 'Frequent complaints regarding expired, damaged, or poor-quality fresh produce and packaged items.' },
+  { rank: 4, title: 'Pricing Opacity & Surcharges', mentions: 13, category: 'Pricing', desc: 'Resentment toward handling charges, surge pricing, and delivery sops that raise total costs above MRP.' },
+  { rank: 5, title: 'Post-Purchase Assurance Fear', mentions: 6, category: 'Trust', desc: 'Apprehension around strict "no-return" policies for non-perishable categories, acting as a barrier to trial.' },
+  { rank: 6, title: 'Student & Bachelor Utility', mentions: 6, category: 'Habit', desc: 'High propensity to use the app for late-night needs (academic xerox, instant foods, and Ramen).' },
+  { rank: 7, title: 'Security & Trust Anxieties', mentions: 4, category: 'Trust', desc: 'Safety concerns regarding delivery personnel interactions and potential quick-commerce scams.' },
+  { rank: 8, title: 'Operational Reliability Issues', mentions: 3, category: 'Delivery', desc: 'Service availability outages (e.g. "Currently Unavailable" status) breaking habitual shopping loops.' },
+  { rank: 9, title: 'Checkout UX Transparency', mentions: 1, category: 'UX', desc: 'Direct-to-payment routing without showing a cart order summary leads to unexpected fees.' },
+  { rank: 10, title: 'Niche Product Assortment', mentions: 2, category: 'Discovery', desc: 'Desire for expanded categories like fresh herbs, books, and specialized global cuisines.' }
 ];
 
 const OPPORTUNITIES = [
   {
-    title: "1. The Trust Gate: Flexible Return Policy for Non-FMCG",
-    segment: "Emergency Utility Buyer & Gourmet Trial Enthusiast",
-    impact: "High Business Value & Trust Gain",
-    description: "Replace the 'no replacement, contact brand' policy for electronics and personal care under a certain value with a seamless 24-hour return. Fear of defective items is the #1 blocker for high-margin categories.",
-    nudge: "Introduce a 'Blinkit Assured / 24hr Easy Return' badge next to premium items."
+    title: "1. Post-Purchase Assurance: Return/Exchange Gateway",
+    segment: "Niche Variety Seekers & Non-FMCG Shoppers",
+    impact: "High Retention & Trust Recovery",
+    description: "Establish transparent return policies for electronics and non-perishables. Replace automated bots with an empathetic human support agent escalation gateway.",
+    nudge: "Add a 'Direct Human Dispute Resolution' guarantee inside help chats."
   },
   {
-    title: "2. Transparent Fee Structures & Regular Rewards",
-    segment: "Impulse Snacker & Daily Essentials Stocker",
-    impact: "High Retention & AOV Boost",
-    description: "Consolidate handling and packaging charges into a single transparent delivery fee structure, and introduce loyalty benefits for repeat category trial (e.g. discount on gourmet coffee after buying daily milk).",
-    nudge: "Loyalty Tiering: Unlock waived handling charges on orders that trial new categories."
+    title: "2. The Xerox & Study Utility Bundle for Hostels",
+    segment: "Students & Bachelors",
+    impact: "High Customer Lifetime Value & Trial Rate",
+    description: "Scale the late-night printout and stationery delivery. Pair student essentials (e.g. late-night snacks, Ramen, notebooks) with zero-handling fee benefits.",
+    nudge: "Introduce 'Hostel Survival Kits' with pre-bundled print and snack selections."
   },
   {
-    title: "3. Visual Trust & Expiry Date Guarantees",
-    segment: "Gourmet Trial Enthusiast & Daily Stocker",
-    impact: "High Conversion Rate Improvement",
-    description: "Provide transparency by displaying 'Guaranteed Expiry Date' and real user photo-reviews. Include verified badge information for premium, organic, or imported labels.",
-    nudge: "Show live temperature of the warehouse/rider container and product expiry dates on PDPs."
+    title: "3. Pre-Payment Checkout Summary Screen",
+    segment: "All Users / Price-Sensitive Shoppers",
+    impact: "Checkout Transparency & Reduced Cart Abandonment",
+    description: "Provide a mandatory order summary screen showing delivery, handling, and surge fees explicitly before directing to payment interfaces.",
+    nudge: "Add a 'Review Surcharges' verification drawer before final checkout route."
   },
   {
-    title: "4. The Breakfast Routine Bridge",
-    segment: "Daily Essentials Stocker",
-    impact: "Cross-category adoption (Grocery -> Personal Care/Kitchen)",
-    description: "Nudge users who order morning staples (milk, bread) with kitchen utilities (sponge, dishwash soap, garbage bags) right before checkout at identical speed.",
-    nudge: "'Frequently bought in morning routines' bundle discount at checkout."
+    title: "4. Lowered Category Trial Delivery Thresholds",
+    segment: "Impulse Snacker & Niche Food Trialist",
+    impact: "Trial Rates across Specialized Portfolios",
+    description: "Permit a lower minimum order value (e.g. ₹99 instead of ₹199) for repeat users attempting their first-ever purchase in a high-margin category.",
+    nudge: "Waive delivery charges on first-time niche category orders."
   }
 ];
 
@@ -90,21 +90,24 @@ export default function StrategicInsights({ reviewsData = [], sentimentCounts = 
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '0.25rem' }}>
-          {STRATEGIC_THEMES.map((theme, i) => (
-            <div key={i} style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', padding: '0.75rem 1rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ backgroundColor: 'var(--accent-yellow)', color: '#000', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>{theme.rank}</span>
-                  <strong style={{ fontSize: '0.85rem' }}>{theme.title}</strong>
+          {(() => {
+            const maxMentions = Math.max(...STRATEGIC_THEMES.map(t => t.mentions)) || 15;
+            return STRATEGIC_THEMES.map((theme, i) => (
+              <div key={i} style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', padding: '0.75rem 1rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ backgroundColor: 'var(--accent-yellow)', color: '#000', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>{theme.rank}</span>
+                    <strong style={{ fontSize: '0.85rem' }}>{theme.title}</strong>
+                  </div>
+                  <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{theme.mentions} mentions</span>
                 </div>
-                <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{theme.mentions} mentions</span>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.25rem 0' }}>{theme.desc}</p>
+                <div style={{ height: '4px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '2px', marginTop: '0.5rem' }}>
+                  <div style={{ height: '100%', width: `${(theme.mentions / maxMentions) * 100}%`, backgroundColor: '#3B82F6', borderRadius: '2px' }}></div>
+                </div>
               </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.25rem 0' }}>{theme.desc}</p>
-              <div style={{ height: '4px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '2px', marginTop: '0.5rem' }}>
-                <div style={{ height: '100%', width: `${(theme.mentions / 15) * 100}%`, backgroundColor: '#3B82F6', borderRadius: '2px' }}></div>
-              </div>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       </div>
 
@@ -327,35 +330,35 @@ export default function StrategicInsights({ reviewsData = [], sentimentCounts = 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', fontSize: '11px' }}>
                 <div>
                   <strong style={{ color: '#1a365d' }}>Q1. Why do users repeatedly buy from the same categories?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>High reliability in time-critical morning routines (e.g. daily milk/veggies) drives strong repeat habit loops, though users desire loyalty benefits for long-term retention.</p>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Repeated purchases are driven by speed, convenience, and reliability. However, long-term loyalty is increasingly threatened by operational inconsistencies, delivery delays, and service unavailability.</p>
                 </div>
                 <div>
-                  <strong style={{ color: '#1a365d' }}>Q2. What barriers prevent users from exploring new categories?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Friction and deep mistrust regarding return/replacement policies for non-FMCG items. Counterfeit fears for premium personal care block exploration.</p>
+                  <strong style={{ color: '#1a365d' }}>Q2. What prevents users from exploring new categories?</strong>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Fundamentally deterred by a trust deficit in post-purchase support and product quality. Receival of defective items paired with rigid automated support limits trial of high-margin items.</p>
                 </div>
                 <div>
-                  <strong style={{ color: '#1a365d' }}>Q3. How does trust affect category exploration?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Counterfeit anxieties on skincare and rigid refund support logic prevent users from trusting 10-minute delivery for high-ticket items.</p>
+                  <strong style={{ color: '#1a365d' }}>Q3. How do users discover products today?</strong>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Discovery occurs via convenience-driven searches for hard-to-find items (inventory gap filling) and community-driven influence/recommendations.</p>
                 </div>
                 <div>
-                  <strong style={{ color: '#1a365d' }}>Q4. What is the impact of delivery speed and reliability on repeats?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Speed builds strong habitual loops. Blinkit acts as an essential last-minute infrastructure assistant for unexpected home needs.</p>
+                  <strong style={{ color: '#1a365d' }}>Q4. What role do habits play in shopping behavior?</strong>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Rely heavily on instant gratification for daily needs, but this habit loop is fragile and breaks when service outages, delivery delays, or overpricing issues occur.</p>
                 </div>
                 <div>
                   <strong style={{ color: '#1a365d' }}>Q5. What information do users need before trying a new category?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Guaranteed product expiry dates, detailed nutrition/caffeine specifications, and real user photo reviews to substitute in-hand inspection.</p>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Transparency regarding price markups, clear post-purchase support return/refund guarantees, and personnel interaction security to reduce scam fears.</p>
                 </div>
                 <div>
                   <strong style={{ color: '#1a365d' }}>Q6. What frustrations emerge repeatedly?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Automated chatbot refund denials for damaged goods, stale produce quality control failures, and opaque handling fee charges.</p>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Systemic quality control failures (expired/damaged items), ineffective bot-driven support resolution, and lack of billing and refund accountability.</p>
                 </div>
                 <div>
                   <strong style={{ color: '#1a365d' }}>Q7. Which user segments are more likely to experiment?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Convenience-seeking hostel students (for printouts/late-night snacks) and new Tier-2/3 market expansions testing delivery speed claims.</p>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Students and bachelors in hostels view the app as a daily survival tool, utilizing it for academic Xerox prints, late-night snacks, and Ramen purchases.</p>
                 </div>
                 <div>
                   <strong style={{ color: '#1a365d' }}>Q8. What unmet needs emerge consistently?</strong>
-                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Transparent delivery fees (no packaging surcharges), consumer-centric refund dispute options, and sustainability improvements (plastic-free packs).</p>
+                  <p style={{ margin: '3px 0 0 0', color: '#333' }}>Financial transparency (handling charges, surge prices), app performance stability, human-centric dispute support, and lower free delivery thresholds.</p>
                 </div>
               </div>
             </div>
