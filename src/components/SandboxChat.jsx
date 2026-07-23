@@ -29,31 +29,38 @@ export default function SandboxChat() {
     let explanation = "";
 
     // 1. Determine Emotion/Sentiment
-    if (lower.includes('bad') || lower.includes('forgot') || lower.includes('worst') || lower.includes('refund') || lower.includes('confusing') || lower.includes('poor') || lower.includes('frustrated') || lower.includes('late')) {
+    const hasPositive = lower.includes('easy') || lower.includes('good') || lower.includes('fast') || lower.includes('love') || lower.includes('discovered') || lower.includes('excellent') || lower.includes('amazing') || lower.includes('happy') || lower.includes('best');
+    const hasNegative = lower.includes('bad') || lower.includes('forgot') || lower.includes('worst') || lower.includes('refund') || lower.includes('confusing') || lower.includes('poor') || lower.includes('frustrated') || lower.includes('late') || lower.includes('loot') || lower.includes('surcharge') || lower.includes('fee') || lower.includes('charge') || lower.includes('charging') || lower.includes('bekaar') || lower.includes('bakwas') || lower.includes('scam') || lower.includes('failed');
+
+    if (hasPositive && hasNegative) {
+      sentiment = 'mixed';
+      emotionColor = '#fbbf24';
+      emotionIcon = <Meh size={16} />;
+    } else if (hasNegative) {
       sentiment = 'negative';
       emotionColor = '#f87171';
       emotionIcon = <Frown size={16} />;
-    } else if (lower.includes('easy') || lower.includes('good') || lower.includes('fast') || lower.includes('love') || lower.includes('discovered') || lower.includes('excellent') || lower.includes('amazing')) {
+    } else if (hasPositive) {
       sentiment = 'positive';
       emotionColor = '#4ade80';
       emotionIcon = <Smile size={16} />;
     } else {
-      sentiment = 'mixed';
-      emotionColor = '#fbbf24';
+      sentiment = 'neutral';
+      emotionColor = '#a3a3a3';
       emotionIcon = <Meh size={16} />;
     }
 
     // 2. Map Category/Sector tags
-    if (lower.includes('refund') || lower.includes('money') || lower.includes('price') || lower.includes('cost') || lower.includes('cheap') || lower.includes('expensive')) {
+    if (lower.includes('refund') || lower.includes('money') || lower.includes('price') || lower.includes('cost') || lower.includes('cheap') || lower.includes('expensive') || lower.includes('fee') || lower.includes('charge') || lower.includes('surcharge') || lower.includes('margins')) {
       tags.push('Pricing & Refunds');
     }
-    if (lower.includes('delivery') || lower.includes('late') || lower.includes('forgot') || lower.includes('time') || lower.includes('fast')) {
+    if (lower.includes('delivery') || lower.includes('late') || lower.includes('forgot') || lower.includes('delay') || lower.includes('rider') || lower.includes('boy')) {
       tags.push('Delivery Logistics');
     }
-    if (lower.includes('search') || lower.includes('find') || lower.includes('app') || lower.includes('layout') || lower.includes('confusing')) {
+    if (lower.includes('search') || lower.includes('find') || lower.includes('app') || lower.includes('layout') || lower.includes('confusing') || lower.includes('ui')) {
       tags.push('Search & Discovery UX');
     }
-    if (lower.includes('snack') || lower.includes('grocery') || lower.includes('vegetable') || lower.includes('brand') || lower.includes('coriander') || lower.includes('chip')) {
+    if (lower.includes('snack') || lower.includes('grocery') || lower.includes('vegetable') || lower.includes('brand') || lower.includes('coriander') || lower.includes('chip') || lower.includes('item') || lower.includes('serum') || lower.includes('beauty')) {
       tags.push('Product Variety');
     }
     if (tags.length === 0) {
@@ -61,15 +68,18 @@ export default function SandboxChat() {
     }
 
     // 3. Map Discovery Question
-    if (lower.includes('forgot') || lower.includes('refund') || lower.includes('worst') || lower.includes('bad') || lower.includes('confusing')) {
-      qid = 6; // Frustrations
-      explanation = "This review indicates operational friction, placing it under repeated customer frustrations.";
-    } else if (lower.includes('discovered') || lower.includes('try') || lower.includes('experiment')) {
+    if (lower.includes('forgot') || lower.includes('worst') || lower.includes('bad') || lower.includes('confusing') || lower.includes('failed') || lower.includes('bekaar') || lower.includes('bakwas')) {
+      qid = 6; // Repeated Frustrations
+      explanation = "Review highlights immediate operational/support failures, categorizing it under customer frustrations.";
+    } else if (lower.includes('fee') || lower.includes('charge') || lower.includes('surcharge') || lower.includes('margins') || lower.includes('loot') || lower.includes('scam')) {
+      qid = 8; // Unmet Needs / Surcharges
+      explanation = "Highlights financial surcharges and forced packaging fee backlash, mapping to top unmet needs.";
+    } else if (lower.includes('discovered') || lower.includes('try') || lower.includes('experiment') || lower.includes('premium')) {
       qid = 3; // Product Discovery
-      explanation = "Feedback highlights discovery of new products, mapping directly to how users explore new categories.";
-    } else if (lower.includes('again') || lower.includes('always') || lower.includes('daily') || lower.includes('habit')) {
+      explanation = "Feedback highlights discovery of new products/categories, mapping to research on trial exploration.";
+    } else if (lower.includes('again') || lower.includes('always') || lower.includes('daily') || lower.includes('habit') || lower.includes('normally')) {
       qid = 1; // Repeat buy / Habit
-      explanation = "Suggests repeat purchase intent or habitual usage of the app for specific categories.";
+      explanation = "Suggests repeat purchase intent or daily routines (e.g. daily milk/bread), mapping to Q1/Q4.";
     } else {
       qid = 8; // Unmet needs
       explanation = "Maps to overall customer adoption barriers and unmet service needs.";
