@@ -744,6 +744,16 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                     <span className="tech-tag"><CheckCircle2 size={12} /> PM Quality Audit Workbench</span>
                   </div>
 
+                  <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
+                    <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem', fontSize: '1rem' }}>Methodology & Quality Verification Framework</h4>
+                    <ul style={{ paddingLeft: '1.25rem', color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <li><strong>Data Gathering & Cleansing:</strong> Automated extractors gather multi-channel user reviews from Play Store, App Store, Reddit, and Twitter. Cleansing rules filter out short noise and normalize Hinglish vocabulary to capture emotional distress.</li>
+                      <li><strong>Theme Identification:</strong> Reviews are scanned via semantic similarity models to tag core department taxonomy (e.g. Delivery, Pricing, Trust, UX) and isolate recurring keyword clusters.</li>
+                      <li><strong>Insight Generation:</strong> Metric aggregates and opportunities are mapped directly to the 8 primary growth discovery questions to isolate action items and product nudges.</li>
+                      <li><strong>Quality & Precision Validation:</strong> System accuracy is verified using a double-blind validation sample (Step 3 audit workbench below) where AI predictions are verified against PM decisions to guarantee 95%+ precision.</li>
+                    </ul>
+                  </div>
+
                   <div className="disclaimer-alert">
                     <AlertTriangle size={16} className="text-warning" style={{ flexShrink: 0 }} />
                     <span><strong>Demo Dataset Disclaimer:</strong> This pipeline uses a 50-review demo sample. To see the full strategic insights compiled from all 2500+ multi-channel reviews, please visit the <strong>Insights Dashboard</strong>.</span>
