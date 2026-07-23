@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import geminiHandler from './api/gemini.js'
+import scrapeHandler from './api/scrape.js'
 import express from 'express'
 
 // Simulate Vercel serverless function environment locally
@@ -13,6 +14,15 @@ const vercelApiPlugin = () => ({
     app.all('/api/gemini', async (req, res) => {
       try {
         await geminiHandler(req, res)
+      } catch (err) {
+        console.error('API Error:', err)
+        if (!res.headersSent) res.status(500).json({ error: err.message })
+      }
+    })
+
+    app.all('/api/scrape', async (req, res) => {
+      try {
+        await scrapeHandler(req, res)
       } catch (err) {
         console.error('API Error:', err)
         if (!res.headersSent) res.status(500).json({ error: err.message })

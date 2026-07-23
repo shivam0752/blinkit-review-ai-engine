@@ -34,6 +34,7 @@ import HypothesisGrid from './components/HypothesisGrid';
 import ReviewsExplorer from './components/ReviewsExplorer';
 import UserSegments from './components/UserSegments';
 import StrategicInsights from './components/StrategicInsights';
+import RealtimeScraperControl from './components/RealtimeScraperControl';
 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
@@ -287,7 +288,8 @@ export default function App() {
   };
 
   // Pipeline Execution Initiation
-  const startPipeline = () => {
+  const startPipeline = (config) => {
+    const { mode = 'demo', selectedSources = {}, timeRangeMonths = 3 } = config || {};
     setPipelineRunning(true);
     setPipelineStep(1);
     setPipelineProgress(5);
@@ -299,30 +301,165 @@ export default function App() {
     setPipelineIsMock(false);
 
     addLog("Pipeline execution initiated.");
-    addLog("Initializing stage 1: Ingestion & Standardizing...");
+    addLog(`Running in ${mode === 'demo' ? 'DEMO' : 'REAL-TIME'} dataset mode.`);
 
-    setTimeout(runStage1, 100);
+    setTimeout(() => runStage1(mode, selectedSources, timeRangeMonths), 100);
   };
 
   // Stage 1 Ingestion
-  const runStage1 = () => {
-    addLog(`Reading validation reviews sample (validation_audit_sample.csv) containing ${auditData.length} records...`);
-    addLog("Applying data ingestion rules:");
-    addLog("  - Filtering out records missing feedback content...");
-    addLog("  - Discarding short feedback noise under 3 words...");
+  const runStage1 = async (mode, selectedSources, timeRangeMonths) => {
+    if (mode === 'demo') {
+      addLog(`Reading validation reviews sample (validation_audit_sample.csv) containing ${auditData.length} records...`);
+      addLog("Applying data ingestion rules:");
+      addLog("  - Filtering out records missing feedback content...");
+      addLog("  - Discarding short feedback noise under 3 words...");
 
-    const cleanList = auditData.filter(r => r.text && r.text.trim().split(/\s+/).length >= 3);
-    const shortCount = auditData.length - cleanList.length;
+      const cleanList = auditData.filter(r => r.text && r.text.trim().split(/\s+/).length >= 3);
+      const shortCount = auditData.length - cleanList.length;
 
-    addLog(`  - Removed ${shortCount} noise records.`);
-    addLog("  - Deduplication: 0 duplicate reviews removed.");
-    addLog(`Standardization complete. ${cleanList.length} reviews mapped successfully.`);
+      addLog(`  - Removed ${shortCount} noise records.`);
+      addLog("  - Deduplication: 0 duplicate reviews removed.");
+      addLog(`Standardization complete. ${cleanList.length} reviews mapped successfully.`);
 
-    setPipelineStep(2);
-    setPipelineProgress(20);
-    addLog("Transitioning to Stage 2: Batch LLM Classification...");
+      setPipelineStep(2);
+      setPipelineProgress(20);
+      addLog("Transitioning to Stage 2: Batch LLM Classification...");
 
-    setTimeout(() => runStage2(cleanList, 0), 100);
+      setTimeout(() => runStage2(cleanList, 0), 100);
+    } else {
+      // Real-time scraping mode
+      const sourcesList = [];
+      if (selectedSources.playStore) sourcesList.push('play_store');
+      if (selectedSources.appStore) sourcesList.push('app_store');
+      if (selectedSources.forums) sourcesList.push('reddit', 'twitter');
+      const sourcesJoined = sourcesList.join(',');
+
+      addLog(`Initiating real-time data scraping...`);
+      addLog(`Calling scraper for channels [${sourcesList.map(s => s.replace('_', ' ').toUpperCase()).join(', ')}] with lookback period of ${timeRangeMonths} month(s)...`);
+
+      try {
+        const res = await fetch(`/api/scrape?sources=${sourcesJoined}&months=${timeRangeMonths}`);
+        if (!res.ok) {
+          throw new Error(`Scraper API returned HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        addLog(`✅ Real-time scraper complete. Retrieved ${data.length} raw records.`);
+        
+        // Apply data cleansing filters
+        addLog("Applying data ingestion rules:");
+        addLog("  - Filtering out records missing feedback content...");
+        addLog("  - Discarding short feedback noise under 3 words...");
+        
+        const cleanList = data.filter(r => r.text && r.text.trim().split(/\s+/).length >= 3);
+        const shortCount = data.length - cleanList.length;
+        
+        addLog(`  - Removed ${shortCount} noise records.`);
+        addLog("  - Deduplication: Removed duplicate reviews by text...");
+        
+        // Deduplicate
+        const uniqueList = [];
+        const seenTexts = new Set();
+        cleanList.forEach(item => {
+          const cleanText = item.text.trim().toLowerCase();
+          if (!seenTexts.has(cleanText)) {
+            seenTexts.add(cleanText);
+            uniqueList.push(item);
+          }
+        });
+        
+        const dedupCount = cleanList.length - uniqueList.length;
+        addLog(`  - Removed ${dedupCount} duplicate records.`);
+        addLog(`Standardization complete. ${uniqueList.length} reviews mapped successfully.`);
+
+        if (uniqueList.length === 0) {
+          addLog("⚠️ No records found in the requested lookback window. Falling back to default historical database sample.");
+          const fallbackPool = reviewsData.filter(r => {
+            const src = r.source?.toLowerCase();
+            if (selectedSources.playStore && src?.includes('play_store')) return true;
+            if (selectedSources.appStore && src?.includes('app_store')) return true;
+            if (selectedSources.forums && (src?.includes('reddit') || src?.includes('twitter') || src?.includes('x') || src?.startsWith('web:'))) return true;
+            return false;
+          }).slice(0, 15);
+          
+          const mappedFallback = fallbackPool.map((r, i) => ({
+            id: r.id || `fb-${i}`,
+            source: r.source,
+            text: r.text,
+            rating: r.rating ? Number(r.rating) : null,
+            date: r.date || new Date().toISOString(),
+            author: r.author || 'Anonymous User',
+            url: r.url || ''
+          }));
+          addLog(`Loaded ${mappedFallback.length} historical records as fallback.`);
+          
+          setPipelineStep(2);
+          setPipelineProgress(20);
+          addLog("Transitioning to Stage 2: Batch LLM Classification...");
+          setTimeout(() => runStage2(mappedFallback, 0), 100);
+        } else {
+          const formattedList = uniqueList.map((item, idx) => ({
+            ...item,
+            id: item.id || `scraped-${idx + 1}`
+          }));
+          
+          setPipelineStep(2);
+          setPipelineProgress(20);
+          addLog("Transitioning to Stage 2: Batch LLM Classification...");
+          setTimeout(() => runStage2(formattedList, 0), 100);
+        }
+      } catch (err) {
+        addLog(`❌ Scraper failed: ${err.message}`);
+        addLog("Falling back to simulated real-time data from historical local database...");
+        
+        const localFiltered = reviewsData.filter(r => {
+          const src = r.source?.toLowerCase();
+          let matchSource = false;
+          if (selectedSources.playStore && src?.includes('play_store')) matchSource = true;
+          if (selectedSources.appStore && src?.includes('app_store')) matchSource = true;
+          if (selectedSources.forums && (src?.includes('reddit') || src?.includes('twitter') || src?.includes('x') || src?.startsWith('web:'))) matchSource = true;
+          
+          if (!matchSource) return false;
+          if (!r.date) return false;
+          
+          const rDate = new Date(r.date.replace(/·/g, ' ').replace(/\s+/g, ' '));
+          if (isNaN(rDate.getTime())) return false;
+          
+          const cutoff = new Date('2026-07-23T16:41:52+05:30');
+          cutoff.setMonth(cutoff.getMonth() - timeRangeMonths);
+          return rDate >= cutoff;
+        });
+        
+        addLog(`Standardizing ${localFiltered.length} matching records from historical dataset...`);
+        
+        const cleanList = localFiltered.filter(r => r.text && r.text.trim().split(/\s+/).length >= 3);
+        const uniqueList = [];
+        const seenTexts = new Set();
+        cleanList.forEach(item => {
+          const cleanText = item.text.trim().toLowerCase();
+          if (!seenTexts.has(cleanText)) {
+            seenTexts.add(cleanText);
+            uniqueList.push(item);
+          }
+        });
+        
+        const finalPool = uniqueList.slice(0, 50).map((r, i) => ({
+          id: r.id || `fallback-${i}`,
+          source: r.source,
+          text: r.text,
+          rating: r.rating ? Number(r.rating) : null,
+          date: r.date,
+          author: r.author || 'Anonymous User',
+          url: r.url || ''
+        }));
+        
+        addLog(`Selected a sample of ${finalPool.length} cleaned records for execution.`);
+        
+        setPipelineStep(2);
+        setPipelineProgress(20);
+        addLog("Transitioning to Stage 2: Batch LLM Classification...");
+        setTimeout(() => runStage2(finalPool, 0), 100);
+      }
+    }
   };
 
   // Stage 2 Batch Classification
@@ -420,17 +557,87 @@ Return ONLY the JSON array. Do not wrap in markdown fences.`;
   };
 
   const simulateBatch = (batch) => {
-    const mapped = batch.map(r => ({
-      id: r.id,
-      source: r.source,
-      text: r.text,
-      rating: r.rating,
-      sentiment: r.sentiment || 'neutral',
-      category_tags: r.category_tags || '[]',
-      barrier_themes: r.barrier_themes || '[]',
-      discovery_q_ids: r.discovery_q_ids || '[]',
-      confidence: Number(r.confidence) || (0.85 + Math.random() * 0.12)
-    }));
+    const mapped = batch.map(r => {
+      // If the review already has classifications (like from our pre-processed CSVs)
+      if (r.sentiment && r.category_tags && r.category_tags !== '[]') {
+        return {
+          id: r.id,
+          source: r.source,
+          text: r.text,
+          rating: r.rating,
+          sentiment: r.sentiment,
+          category_tags: r.category_tags,
+          barrier_themes: r.barrier_themes || '[]',
+          discovery_q_ids: r.discovery_q_ids || '[]',
+          confidence: Number(r.confidence) || 0.90
+        };
+      }
+
+      // Heuristic classifications for real-time scraped reviews when API key is missing
+      const textLower = r.text.toLowerCase();
+      let sentiment = 'positive';
+      if (r.rating) {
+        sentiment = r.rating <= 2 ? 'negative' : r.rating === 3 ? 'neutral' : 'positive';
+      } else if (textLower.includes('bad') || textLower.includes('slow') || textLower.includes('worst') || textLower.includes('expensive') || textLower.includes('scam') || textLower.includes('fraud') || textLower.includes('charge')) {
+        sentiment = 'negative';
+      } else if (textLower.includes('good') || textLower.includes('fast') || textLower.includes('love') || textLower.includes('best') || textLower.includes('great')) {
+        sentiment = 'positive';
+      } else {
+        sentiment = 'neutral';
+      }
+
+      const tags = [];
+      const barriers = [];
+      const qids = [];
+
+      // Category tagging heuristics
+      if (textLower.includes('delivery') || textLower.includes('time') || textLower.includes('fast') || textLower.includes('late') || textLower.includes('speed') || textLower.includes('rider') || textLower.includes('quick')) {
+        tags.push('delivery');
+        qids.push(4);
+        if (sentiment === 'negative') barriers.push('past_bad_experience');
+      }
+      if (textLower.includes('price') || textLower.includes('rate') || textLower.includes('cost') || textLower.includes('expensive') || textLower.includes('charge') || textLower.includes('money') || textLower.includes('cheap') || textLower.includes('mrp') || textLower.includes('surcharge')) {
+        tags.push('pricing');
+        qids.push(5);
+        if (sentiment === 'negative') barriers.push('price_sensitivity');
+      }
+      if (textLower.includes('scam') || textLower.includes('fraud') || textLower.includes('refund') || textLower.includes('trust') || textLower.includes('fake') || textLower.includes('original') || textLower.includes('cheat')) {
+        tags.push('trust');
+        qids.push(3);
+        if (sentiment === 'negative') barriers.push('trust_deficit');
+      }
+      if (textLower.includes('quality') || textLower.includes('fresh') || textLower.includes('rotten') || textLower.includes('bad product') || textLower.includes('damaged') || textLower.includes('expired')) {
+        tags.push('quality');
+        qids.push(2);
+        if (sentiment === 'negative') barriers.push('quality_uncertainty');
+      }
+      if (textLower.includes('habit') || textLower.includes('daily') || textLower.includes('everyday') || textLower.includes('always') || textLower.includes('regular') || textLower.includes('routine')) {
+        tags.push('habit');
+        qids.push(8);
+        barriers.push('habit_inertia');
+      }
+      if (textLower.includes('variety') || textLower.includes('stock') || textLower.includes('item') || textLower.includes('brand') || textLower.includes('option') || textLower.includes('avail') || textLower.includes('range')) {
+        tags.push('variety');
+        qids.push(6);
+        if (sentiment === 'negative') barriers.push('lack_of_awareness');
+      }
+      if (tags.length === 0) {
+        tags.push('discovery');
+        qids.push(1);
+      }
+
+      return {
+        id: r.id,
+        source: r.source,
+        text: r.text,
+        rating: r.rating,
+        sentiment,
+        category_tags: JSON.stringify(tags),
+        barrier_themes: JSON.stringify(barriers),
+        discovery_q_ids: JSON.stringify(qids),
+        confidence: Number((0.82 + Math.random() * 0.12).toFixed(2))
+      };
+    });
     setSandboxClassifiedData(prev => [...prev, ...mapped]);
     addLog(`  <- [SIMULATION] Classified ${batch.length} items using local fallback model.`);
   };
@@ -761,19 +968,10 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                   </div>
                 </div>
 
-                <div className="setup-form" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div className="pipeline-card-status" style={{ marginBottom: '1.25rem' }}>
-                    <h5><RefreshCw size={16} className="text-accent" style={{ display: 'inline', marginRight: '0.4rem', animation: 'spin 8s linear infinite' }} /> Vercel Serverless Pipeline</h5>
-                  </div>
-
-                  <button
-                    className="btn btn-primary btn-full"
-                    disabled={pipelineRunning}
-                    onClick={startPipeline}
-                  >
-                    {pipelineRunning ? <RefreshCw className="fa-spin" size={16} /> : <i className="fa-solid fa-play" />} Initiate Automated Pipeline
-                  </button>
-                </div>
+                <RealtimeScraperControl
+                  pipelineRunning={pipelineRunning}
+                  onInitiate={startPipeline}
+                />
               </div>
             </div>
 
@@ -889,7 +1087,7 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
 
                   <div>
                     {/* Workbench Review Card */}
-                    {sandboxAuditedRecords.length >= 40 ? (
+                    {sandboxAuditedRecords.length >= Math.min(40, sandboxClassifiedData.length) ? (
                       <div className="audit-workbench-card text-center" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         <CheckCircle2 size={36} className="text-success mb-2" style={{ margin: '0 auto' }} />
                         <h4>Verification Checkpoint Complete</h4>
@@ -1019,15 +1217,20 @@ Return ONLY the JSON. Do not wrap in markdown fences.`;
                             {insight.summary}
                           </p>
                           <div className="themes-mini">
-                            <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>Top Themes:</strong>
+                            <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>Top Themes & Key Insights:</strong>
                             <ul style={{ paddingLeft: '0', listStyleType: 'none', fontSize: '0.75rem', margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
                               {themes.slice(0, 3).map((t, idx) => (
-                                <li key={idx} style={{ marginBottom: '0.5rem' }}>
+                                <li key={idx} style={{ marginBottom: '0.75rem' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
                                     <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{t.title}</span>
                                     <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{t.frequency} mentions</span>
                                   </div>
-                                  <div style={{ height: '4px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '2px' }}>
+                                  {t.description && (
+                                    <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', margin: '0.15rem 0 0.4rem 0', lineHeight: '1.35' }}>
+                                      {t.description}
+                                    </p>
+                                  )}
+                                  <div style={{ height: '4px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '2px', marginBottom: '0.25rem' }}>
                                     <div style={{ height: '100%', width: `${Math.min(100, t.frequency * 8)}%`, backgroundColor: '#3B82F6', borderRadius: '2px' }}></div>
                                   </div>
                                 </li>
